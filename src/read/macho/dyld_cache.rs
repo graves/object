@@ -68,9 +68,6 @@ where
         let mut subcaches = Vec::new();
         for (&data, info) in subcache_data.iter().zip(subcaches_info.iter()) {
             let sc_header = macho::DyldCacheHeader::<E>::parse(data)?;
-            if sc_header.uuid != info.uuid {
-                return Err(Error("Unexpected SubCache UUID"));
-            }
             let mappings = sc_header.mappings(endian, data)?;
             subcaches.push(DyldSubCache { data, mappings });
         }
@@ -80,9 +77,6 @@ where
         let _symbols_subcache = match symbols_subcache_data_and_uuid {
             Some((data, uuid)) => {
                 let sc_header = macho::DyldCacheHeader::<E>::parse(data)?;
-                if sc_header.uuid != uuid {
-                    return Err(Error("Unexpected .symbols SubCache UUID"));
-                }
                 let mappings = sc_header.mappings(endian, data)?;
                 Some(DyldSubCache { data, mappings })
             }
